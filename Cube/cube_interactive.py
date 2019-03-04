@@ -1,13 +1,13 @@
 #----------------------------------------------------------------------
 # Matplotlib Rubik's cube simulator
 # Written by Jake Vanderplas
-# Adapted from cube code written by David Hogg
+# Adapted from cube Cube written by David Hogg
 #   https://github.com/davidwhogg/MagicCube
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import widgets
-from projection import Quaternion, project_points
+from Cube.projection import Quaternion, project_points
 
 """
 Sticker representation
@@ -42,6 +42,7 @@ The canonical order is found by doing
 After any rotation, this can be used to quickly restore the cube to
 canonical position.
 """
+
 
 class Cube:
     """Magic Cube Representation"""
@@ -198,6 +199,9 @@ class Cube:
         fig = plt.figure(figsize=(5, 5))
         fig.add_axes(InteractiveCube(self))
         return fig
+
+    def getColors(self):
+        return self._colors
 
 
 class InteractiveCube(plt.Axes):
@@ -458,7 +462,7 @@ if __name__ == '__main__':
     c = Cube(N)
 
     # do a 3-corner swap
-    #c.rotate_face('R')
+    # c.rotate_face('R')
     #c.rotate_face('D')
     #c.rotate_face('R', -1)
     #c.rotate_face('U', -1)
