@@ -1,3 +1,10 @@
+"""
+Agent that solves a rubix cube provided to it and returns the moves it used
+Written by Daniel Fisher
+Uses code written by Jake Vanderplas and David Hogg for cube simulation
+    https://github.com/davidwhogg/MagicCube
+"""
+
 from Cube.cube_interactive import Cube as Cube
 import numpy as np
 import matplotlib.pyplot as plt
