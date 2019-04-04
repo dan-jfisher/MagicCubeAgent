@@ -195,21 +195,39 @@ class Cube:
         self._face_centroids[flag, :3] = np.dot(self._face_centroids[flag, :3],
                                                 M.T)
 
-    def draw_interactive(self):
+    def draw_interactive(self, moveList = []):
         fig = plt.figure(figsize=(5, 5))
-        fig.add_axes(InteractiveCube(self))
+        interactiveCube = InteractiveCube(self)
+        interactiveCube.setSolution(moveList)
+        fig.add_axes(interactiveCube)
         return fig
 
     def getColors(self):
         return self._colors
 
+    def randomize(self, number):
+        """
+        Make `number` randomly chosen moves to scramble the cube.
+        """
+        faceLetters = ['B','D','F','L','R','U']
+        for t in range(number):
+            f = faceLetters[np.random.randint(6)]
+            # l = np.random.randint(self.N)
+            # d = 1 + np.random.randint(3)
+            self.rotate_face(f)
+        return None
+
+    def getMoveList(self):
+        return self._move_list
 
 class InteractiveCube(plt.Axes):
-    def __init__(self, cube=None,
+    def __init__(self,
+                 cube=None,
                  interactive=True,
                  view=(0, 0, 10),
                  fig=None, rect=[0, 0.16, 1, 0.84],
                  **kwargs):
+        self.solutionMoveList = []
         if cube is None:
             self.cube = Cube(3)
         elif isinstance(cube, Cube):
@@ -287,6 +305,9 @@ class InteractiveCube(plt.Axes):
                          "(hold shift for counter-clockwise)",
                          size=10)
 
+    def setSolution(self, movelist):
+        self.solutionMoveList = movelist
+
     def _initialize_widgets(self):
         self._ax_reset = self.figure.add_axes([0.75, 0.05, 0.2, 0.075])
         self._btn_reset = widgets.Button(self._ax_reset, 'Reset View')
@@ -355,10 +376,11 @@ class InteractiveCube(plt.Axes):
         self._draw_cube()
 
     def _solve_cube(self, *args):
-        move_list = self.cube._move_list[:]
-        for (face, n, layer) in move_list[::-1]:
-            self.rotate_face(face, -n, layer, steps=3)
-        self.cube._move_list = []
+        # overwrite this method to use the list of moves passed in by the agent
+        move_list = self.solutionMoveList
+        for (face, n, layer) in move_list:
+            self.rotate_face(face, n, layer, steps=3)
+        self.solutionMoveList = []
 
     def _key_press(self, event):
         """Handler for key press events"""
@@ -459,7 +481,7 @@ if __name__ == '__main__':
     except:
         N = 3
 
-    c = Cube(N)
+    c = Cube(2)
 
     # do a 3-corner swap
     # c.rotate_face('R')
