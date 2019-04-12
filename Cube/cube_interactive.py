@@ -210,11 +210,13 @@ class Cube:
         Make `number` randomly chosen moves to scramble the cube.
         """
         faceLetters = ['B','D','F','L','R','U']
+        directions = [-1, 1]
         for t in range(number):
             f = faceLetters[np.random.randint(6)]
+            d = directions[np.random.randint(2)]
             # l = np.random.randint(self.N)
             # d = 1 + np.random.randint(3)
-            self.rotate_face(f)
+            self.rotate_face(f, d)
         return None
 
     def getMoveList(self):
@@ -473,6 +475,7 @@ class InteractiveCube(plt.Axes):
                 self.set_ylim(factor * ylim[0], factor * ylim[1])
 
                 self.figure.canvas.draw()
+
 
 if __name__ == '__main__':
     import sys
