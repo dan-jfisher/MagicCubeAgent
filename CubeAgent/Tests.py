@@ -1,3 +1,10 @@
+"""
+Agent that solves a rubix cube provided to it and returns the moves it used
+Written by Daniel Fisher
+Uses code written by Jake Vanderplas and David Hogg for cube simulation
+    https://github.com/davidwhogg/MagicCube
+"""
+
 import unittest
 from datetime import datetime
 from CubeAgent.State import CubeState
@@ -25,17 +32,6 @@ class TestCubeState(unittest.TestCase):
         self.turn360('d', cubeState)
         self.turn360('f', cubeState)
         self.turn360('b', cubeState)
-
-    # def testNTurns(self):
-    #     cube1 = CubeState()
-    #     cube2 = CubeState()
-    #
-    #     cube1.rotateFace1Turn('R')
-    #     cube1.rotateFace1Turn('R')
-    #
-    #     cube2.rotateFace('R', 2)
-    #
-    #     self.assertEqual(cube1.cubelets, cube2.cubelets)
 
     def turn360(self, face, cubeState):
         origCubelets = cubeState.cubelets[:]
