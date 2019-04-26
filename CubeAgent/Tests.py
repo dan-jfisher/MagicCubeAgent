@@ -2,6 +2,11 @@ import unittest
 from datetime import datetime
 from CubeAgent.State import CubeState
 from CubeAgent.Agent import CubeAgent
+import pickle
+import random
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 
 class TestCubeState(unittest.TestCase):
@@ -44,7 +49,7 @@ class TestCubeState(unittest.TestCase):
 
 class TestCubeAgent(unittest.TestCase):
 
-    def testBfs(self):
+    def search(self):
         cubeState = CubeState()
         cubeState.rotateFace('R')
         cubeState.rotateFace('U')
@@ -52,15 +57,58 @@ class TestCubeAgent(unittest.TestCase):
         moveList = cubeAgent.solveCube()
         self.assertEqual([('U', -1, 0), ('R', -1, 0)], moveList)
 
-    def BfsRuntine(self):
-        tick = datetime.now()
+    def testAndStoreRandomize(self):
+        possibleMoves = ['R', 'L', 'U', 'D', 'F', 'B', 'r', 'l', 'u', 'd', 'f', 'b']
         cubeState = CubeState()
-        cubeState.rotateFace('R')
-        cubeState.rotateFace('U')
-        cubeState.rotateFace('L')
-        cubeState.rotateFace('F')
-        cubeState.rotateFace('b')
-        cubeAgent = CubeAgent(cubeState)
-        moveList = cubeAgent.solveCube()
-        tock = datetime.now()
-        print(tock - tick)
+
+        stateList = []
+        for _ in range(500):
+            state = cubeState.cubelets
+            for _ in range(20):
+                state = cubeState.getRotatedCubelets(random.choice(possibleMoves), state)
+            stateList.append(list(state))
+
+        file = open("randomStateList", 'wb')
+        pickle.dump(stateList, file)
+        file.close()
+
+    def testRuntineAve(self):
+        cubeState = CubeState()
+        file = open("randomStateList", 'rb')
+        stateList = pickle.load(file)
+        timeList = []
+        for state in stateList:
+            cubeState.cubelets = state
+            tick = datetime.now()
+            cubeAgent = CubeAgent(cubeState)
+            moveList = cubeAgent.solveCube()
+            tock = datetime.now()
+            timeList.append((tock - tick).total_seconds())
+        print('Average Runtime:')
+        print(sum(timeList) / len(timeList))
+
+    def testRuntimeSpread(self):
+        cubeState = CubeState()
+        file = open("randomStateList", 'rb')
+        stateList = pickle.load(file)
+        file.close()
+        timeList = []
+        visitedStatesList = []
+        for state in stateList:
+            cubeState.cubelets = state
+            tick = datetime.now()
+            cubeAgent = CubeAgent(cubeState)
+            moveList = cubeAgent.solveCube()
+            tock = datetime.now()
+            timeList.append((tock - tick).total_seconds())
+            visitedStatesList.append(cubeAgent.numVisitedStates)
+
+        n, bins, patches = plt.hist(x=visitedStatesList, bins='auto', color='#0504aa', alpha=0.7, rwidth=0.85)
+        plt.grid(axis='y', alpha=0.75)
+        plt.xlabel('Nodes Expanded', fontsize='20')
+        plt.ylabel('Frequency', fontsize='20')
+        plt.title('Frequency of the Number of Expanded Nodes', fontsize='20')
+        maxfreq = n.max()
+        # Set a clean upper y-axis limit.
+        plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq % 10 else maxfreq + 10)
+        plt.show()

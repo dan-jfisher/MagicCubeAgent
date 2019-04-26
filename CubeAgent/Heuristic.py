@@ -5,11 +5,13 @@ from CubeAgent.State import CubeState
 
 class Heuristic:
     # maximum number of quarter turns needed to solve any state: 14
-    def __init__(self):
+    def __init__(self, train):
+        self.trainer = HeuristicTrainer()
+        if train:
+            self.trainer.trainHeuristic()
         heuristicFile = open("cubeStateHeuristic", 'rb')
         self.heuristicValues = pickle.load(heuristicFile)
         heuristicFile.close()
-        # print(self.heuristicValues)
 
     def heuristicLookup(self, state):
         if tuple(state) not in self.heuristicValues:
@@ -28,23 +30,14 @@ class HeuristicTrainer:
 
         states = [cube.cubelets]
         stateCostDict = {}
-        for i in range(1, 9):
-            print(i)
+        for i in range(1, 7):
             randomMoves = random.sample(self.possibleMoves, 6)
             temp = {tuple(cube.getRotatedCubelets(face, state)): i
                     for face in randomMoves for state in states}
             states = temp.keys()
             temp.update(stateCostDict)
             stateCostDict = temp
-            print(len(stateCostDict))
 
-        # state = cube.cubelets
-        # firstRandomMoves = random.sample(self.possibleMoves, 6)
-        # randomStates = {tuple(cube.getRotatedCubelets(face, state)): 1 for face in firstRandomMoves}
-        # secondRandomMoves = random.sample(self.possibleMoves, 6)
-        # tempDict = {tuple(cube.getRotatedCubelets(face, list(randState))): 2
-        #             for face in secondRandomMoves for randState in randomStates}
-        # randomStates.update(tempDict)
         heuristicFile = open(self.filename, 'wb')
         pickle.dump(stateCostDict, heuristicFile)
         heuristicFile.close()

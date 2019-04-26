@@ -12,7 +12,7 @@ class PriorityQueue:
       in quick retrieval of the lowest-priority item in the queue. This
       data structure allows O(1) access to the lowest-priority item.
     """
-    def  __init__(self):
+    def __init__(self):
         self.heap = []
         self.count = 0
 
@@ -50,7 +50,8 @@ class CubeAgent:
     def __init__(self, cube):
         self.cube = cube
         self.moves = []
-        self.heuristic = Heuristic()
+        self.heuristic = Heuristic(True)
+        self.numVisitedStates = 0
 
     def rotateFace(self, face, turn=1, layer=0):
         self.cube.rotateFace(face, turn, layer)
@@ -63,6 +64,7 @@ class CubeAgent:
         while not frontier.isEmpty():
             state, path, cost = frontier.pop()
             if self.isCubeSolved(state):
+                self.numVisitedStates = len(visitedStates)
                 return path
             if tuple(state) not in visitedStates:
                 visitedStates.add(tuple(state))
@@ -83,7 +85,6 @@ if __name__ == '__main__':
 
     cubeState = CubeState()
     randomMoveList = cube.getMoveList()
-    print(randomMoveList)
     for move in randomMoveList:
         face, dir, depth = move
         cubeState.rotateFace(face, dir)
